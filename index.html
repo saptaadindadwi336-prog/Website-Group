@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Star Classification | IPSE</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:'Rajdhani',sans-serif;
+    background:black;
+    color:white;
+}
+
+/* ===========================
+BACKGROUND
+=========================== */
+
+body{
+    background:
+    radial-gradient(circle at top,#18285d 0%, #080818 45%, #000 100%);
+}
+
+.milkyway{
+    position:fixed;
+    inset:0;
+    background:
+    linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),
+    url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1974&auto=format&fit=crop");
+    background-size:cover;
+    background-position:center;
+    z-index:0;
+    animation:bgZoom 40s ease-in-out infinite alternate;
+}
+
+@keyframes bgZoom{
+    from{
+        transform:scale(1);
+    }
+    to{
+        transform:scale(1.08);
+    }
+}
+
+.stars-bg{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+}
+
+.stars-bg span{
+    position:absolute;
+    display:block;
+    width:2px;
+    height:2px;
+    border-radius:50%;
+    background:white;
+    animation:twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle{
+    0%{
+        opacity:.2;
+        transform:scale(1);
+    }
+    50%{
+        opacity:1;
+        transform:scale(1.8);
+    }
+    100%{
+        opacity:.2;
+        transform:scale(1);
+    }
+}
+
+/* ===========================
+SCREENS
+=========================== */
+
+.screen{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:10;
+    opacity:0;
+    pointer-events:none;
+    transition:1s;
+    padding:40px;
+}
+
+.screen.active{
+    opacity:1;
+    pointer-events:auto;
+}
+
+.main-title{
+    font-family:'Orbitron',sans-serif;
+    font-size:5rem;
+    text-align:center;
+    letter-spacing:6px;
+    text-shadow:
+    0 0 10px #00d9ff,
+    0 0 25px #00d9ff,
+    0 0 50px #00d9ff;
+}
+
+.subtitle{
+    margin-top:20px;
+    font-size:1.4rem;
+    color:#d9eaff;
+    text-align:center;
+    max-width:900px;
+    line-height:1.8;
+}
+
+.section-title{
+    font-family:'Orbitron',sans-serif;
+    font-size:2.7rem;
+    margin-bottom:25px;
+    color:#9dd9ff;
+    text-shadow:0 0 15px #00bfff;
+    text-align:center;
+}
+
+/* ===========================
+BUTTONS
+=========================== */
+
+.btn-group{
+    margin-top:35px;
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.btn{
+    padding:15px 34px;
+    border:none;
+    border-radius:40px;
+    background:rgba(0,229,255,0.12);
+    border:2px solid #00d9ff;
+    color:#00d9ff;
+    font-family:'Orbitron',sans-serif;
+    cursor:pointer;
+    transition:.4s;
+    font-size:1rem;
+    box-shadow:0 0 15px rgba(0,217,255,.4);
+}
+
+.btn:hover{
+    transform:scale(1.08);
+    background:#00d9ff;
+    color:black;
+    box-shadow:
+    0 0 20px #00d9ff,
+    0 0 40px #00d9ff;
+}
+
+/* ===========================
+CONTENT BOX
+=========================== */
+
+.content-box{
+    width:min(1100px,95%);
+    max-height:68vh;
+    overflow-y:auto;
+    background:rgba(4,10,25,.72);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:25px;
+    padding:35px;
+    backdrop-filter:blur(15px);
+    line-height:1.9;
+    box-shadow:
+    0 0 30px rgba(0,217,255,.2);
+}
+
+.content-box p{
+    margin-bottom:22px;
+    font-size:1.1rem;
+}
+
+.content-box h3{
+    margin-top:20px;
+    margin-bottom:12px;
+    color:#74d8ff;
+    font-family:'Orbitron',sans-serif;
+}
+
+/* ===========================
+TEAM
+=========================== */
+
+.team{
+    text-align:center;
+}
+
+.team h3{
+    font-size:1.7rem;
+    margin:18px 0;
+}
+
+.team p{
+    margin-top:20px;
+    font-size:1.2rem;
+    color:#ffd369;
+    font-family:'Orbitron',sans-serif;
+}
+
+/* ===========================
+STAR EXPLORER
+=========================== */
+
+#explorer{
+    overflow:hidden;
+}
+
+.galaxy-container{
+    position:absolute;
+    inset:0;
+    background:
+    linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.45)),
+    url("https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?q=80&w=2070&auto=format&fit=crop");
+    background-size:cover;
+    background-position:center;
+    z-index:1;
+}
+
+.instructions{
+    position:absolute;
+    left:30px;
+    bottom:30px;
+    max-width:420px;
+    background:rgba(0,0,0,.5);
+    padding:18px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.12);
+    z-index:50;
+    backdrop-filter:blur(10px);
+    line-height:1.6;
+}
+
+.star-field{
+    position:absolute;
+    inset:0;
+    z-index:5;
+}
+
+.star{
+    position:absolute;
+    border-radius:50%;
+    cursor:pointer;
+    transition:.5s;
+    animation:flicker 2.8s infinite ease-in-out;
+}
+
+.star:hover{
+    transform:scale(1.8);
+}
+
+.star.active{
+    transform:scale(2.8);
+    z-index:999;
+}
+
+@keyframes flicker{
+    0%{
+        opacity:.6;
+    }
+    50%{
+        opacity:1;
+    }
+    100%{
+        opacity:.6;
+    }
+}
+
+.star-label{
+    position:absolute;
+    top:130%;
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+    font-size:.85rem;
+    font-family:'Orbitron',sans-serif;
+    text-shadow:0 0 10px black;
+}
+
+/* ===========================
+INFO PANEL
+=========================== */
+
+.info-panel{
+    position:absolute;
+    right:-100%;
+    top:0;
+    width:520px;
+    height:100%;
+    background:rgba(4,8,20,.95);
+    backdrop-filter:blur(20px);
+    z-index:100;
+    padding:30px;
+    overflow-y:auto;
+    transition:.7s;
+    border-left:2px solid #00d9ff;
+}
+
+.info-panel.open{
+    right:0;
+}
+
+.close{
+    position:absolute;
+    top:18px;
+    right:20px;
+    font-size:1.7rem;
+    background:none;
+    border:none;
+    color:white;
+    cursor:pointer;
+}
+
+.info-panel h2{
+    font-family:'Orbitron',sans-serif;
+    margin-bottom:20px;
+    color:#74d8ff;
+}
+
+.info-card{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:18px;
+}
+
+.info-card h3{
+    margin-bottom:8px;
+    color:#ffd369;
+    font-family:'Orbitron',sans-serif;
+}
+
+.info-card p{
+    line-height:1.7;
+}
+
+/* ===========================
+SCROLLBAR
+=========================== */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#00d9ff;
+    border-radius:20px;
+}
+
+/* ===========================
+RESPONSIVE
+=========================== */
+
+@media(max-width:900px){
+
+    .main-title{
+        font-size:3rem;
+    }
+
+    .subtitle{
+        font-size:1rem;
+    }
+
+    .info-panel{
+        width:100%;
+    }
+
+    .instructions{
+        width:90%;
+        left:5%;
+        bottom:15px;
+        font-size:.9rem;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="milkyway"></div>
+
+<div class="stars-bg" id="background-stars"></div>
+
+<!-- ===================================
+SCREEN 1
+=================================== -->
+
+<section class="screen active" id="screen1">
+
+    <h1 class="main-title">
+        STAR CLASSIFICATION
+    </h1>
+
+    <div class="subtitle">
+        Exploring the Hertzsprung–Russell Diagram, Stellar Evolution,
+        Temperature, Luminosity, Color, and the Fascinating Properties
+        of Stars Across the Milky Way Galaxy
+    </div>
+
+    <div class="btn-group">
+        <button class="btn" onclick="goScreen(2)">
+            NEXT JOURNEY
+        </button>
+    </div>
+
+</section>
+
+<!-- ===================================
+SCREEN 2
+=================================== -->
+
+<section class="screen" id="screen2">
+
+    <div class="content-box team">
+
+        <h2 class="section-title">
+            Developed By
+        </h2>
+
+        <h3>Adinda Dwi Sapta Jumaditsani</h3>
+        <h3>Syifa Nurussalam Nazhara</h3>
+        <h3>Tesla Dadiputri</h3>
+
+        <p>IPSE Study Program</p>
+
+    </div>
+
+    <div class="btn-group">
+        <button class="btn" onclick="goScreen(1)">BACK</button>
+        <button class="btn" onclick="goScreen(3)">NEXT</button>
+    </div>
+
+</section>
+
+<!-- ===================================
+SCREEN 3
+=================================== -->
+
+<section class="screen" id="screen3">
+
+    <h2 class="section-title">
+        Understanding Stellar Classification
+    </h2>
+
+    <div class="content-box">
+
+        <p>
+        Stellar classification is the scientific method used by astronomers
+        to categorize stars according to their physical properties.
+        Scientists study a star’s temperature, brightness, luminosity,
+        spectrum, color, mass, radius, and evolutionary stage in order
+        to understand how stars are formed, how they evolve, and how they
+        eventually die. Modern stellar classification systems are based
+        on observational astronomy and spectroscopic analysis developed
+        over many decades of research.
+        </p>
+
+        <h3>The Hertzsprung–Russell Diagram</h3>
+
+        <p>
+        One of the most important tools in astronomy is the
+        Hertzsprung–Russell Diagram, often called the H-R Diagram.
+        This diagram compares the luminosity of stars with their
+        surface temperatures. Temperature decreases from left to right,
+        while luminosity increases upward. The diagram reveals patterns
+        showing that stars are not randomly distributed but grouped into
+        different evolutionary regions such as the Main Sequence,
+        Giants, Supergiants, and White Dwarfs.
+        </p>
+
+        <p>
+        Most stars in the universe, including the Sun, belong to the
+        Main Sequence region. Main Sequence stars generate energy by
+        fusing hydrogen into helium in their cores. Massive stars burn
+        fuel very rapidly and appear hotter, brighter, and bluer.
+        Smaller stars burn fuel slowly and appear cooler and redder.
+        </p>
+
+        <h3>Spectral Classification System</h3>
+
+        <p>
+        Astronomers classify stars using the spectral sequence:
+        O, B, A, F, G, K, and M. This sequence is arranged from the
+        hottest stars to the coolest stars.
+        </p>
+
+        <p>
+        O-type stars are extremely hot blue stars with temperatures
+        above 30,000 Kelvin. B-type stars are blue-white and very luminous.
+        A-type stars appear white and possess strong hydrogen absorption
+        lines. F-type stars are yellow-white, while G-type stars like
+        the Sun are yellow and moderate in temperature.
+        K-type stars are orange and cooler, while M-type stars are
+        red and among the coolest visible stars.
+        </p>
+
+        <h3>Star Colors and Temperature</h3>
+
+        <p>
+        The color of a star is directly related to its surface
+        temperature. Blue stars are the hottest stars in the universe,
+        often exceeding temperatures of 25,000 Kelvin. White stars
+        are slightly cooler but still very hot. Yellow stars such as
+        the Sun have moderate temperatures around 5,500–6,000 Kelvin.
+        Orange stars are cooler, and red stars are the coolest major
+        category of stars visible in the night sky.
+        </p>
+
+        <p>
+        This relationship occurs because hotter objects emit more
+        short-wavelength light, which appears blue, while cooler
+        objects emit longer wavelengths that appear red or orange.
+        Astronomers use this relationship to estimate stellar
+        temperatures and understand stellar evolution.
+        </p>
+
+        <h3>Luminosity and Stellar Size</h3>
+
+        <p>
+        Luminosity refers to the total amount of energy emitted by a
+        star every second. Some stars produce thousands or even
+        millions of times more energy than the Sun. A star’s luminosity
+        depends on both its size and temperature.
+        </p>
+
+        <p>
+        Giant and Supergiant stars possess enormous radii. Even when
+        their surface temperatures are relatively cool, their massive
+        sizes allow them to emit tremendous amounts of light. White
+        dwarfs are the opposite: they are very small yet extremely hot.
+        Despite their high temperatures, their small sizes cause their
+        luminosities to remain relatively low.
+        </p>
+
+        <h3>Stellar Evolution</h3>
+
+        <p>
+        Stars evolve over millions or billions of years. A star begins
+        as a cloud of gas and dust called a nebula. Gravity compresses
+        this material until nuclear fusion begins inside the forming
+        protostar. Once hydrogen fusion stabilizes, the star enters the
+        Main Sequence stage.
+        </p>
+
+        <p>
+        Massive stars evolve rapidly into red giants or supergiants.
+        Eventually they may explode as supernovae and form neutron stars
+        or black holes. Medium-sized stars like the Sun become red giants
+        before shedding their outer layers and ending as white dwarfs.
+        Small red dwarf stars evolve much more slowly and can survive
+        for trillions of years.
+        </p>
+
+        <h3>NASA Astronomical Data</h3>
+
+        <p>
+        Modern stellar measurements are collected using telescopes,
+        satellites, spectroscopy, and space observatories operated by
+        NASA and international astronomy organizations. These measurements
+        provide accurate information regarding stellar temperature,
+        radius, luminosity, mass, distance, and chemical composition.
+        Astronomers continuously improve stellar models using advanced
+        observations from missions such as Hubble Space Telescope,
+        Gaia, and James Webb Space Telescope.
+        </p>
+
+        <p>
+        In this interactive project, you can explore 19 famous stars
+        displayed according to the Hertzsprung–Russell Diagram and
+        inspired by approximate positions within the Milky Way Galaxy.
+        Each star contains detailed information including temperature,
+        color, luminosity, size, classification, and distance from
+        Earth and the Sun.
+        </p>
+
+    </div>
+
+    <div class="btn-group">
+        <button class="btn" onclick="goScreen(2)">BACK</button>
+        <button class="btn" onclick="goScreen(4)">
+            EXPLORE STARS
+        </button>
+    </div>
+
+</section>
+
+<!-- ===================================
+SCREEN 4
+=================================== -->
+
+<section class="screen" id="screen4">
+
+    <div class="galaxy-container"></div>
+
+    <div class="instructions">
+        Click on a star to view its size, temperature, color,
+        luminosity, and classification based on the H-R Diagram
+        and NASA astronomical data.
+    </div>
+
+    <div class="star-field" id="starField"></div>
+
+    <div class="btn-group"
+    style="position:absolute; top:20px; left:20px; z-index:999;">
+        <button class="btn" onclick="goScreen(3)">
+            BACK TO MATERIAL
+        </button>
+    </div>
+
+    <!-- INFO PANEL -->
+
+    <div class="info-panel" id="panel">
+
+        <button class="close" onclick="closePanel()">✦</button>
+
+        <h2 id="starName">Star Name</h2>
+
+        <div id="infoContent"></div>
+
+    </div>
+
+</section>
+
+<script>
+
+/* ===========================
+SCREEN CONTROL
+=========================== */
+
+function goScreen(num){
+
+    document.querySelectorAll(".screen").forEach(screen=>{
+        screen.classList.remove("active");
+    });
+
+    document.getElementById("screen"+num)
+    .classList.add("active");
+
+}
+
+/* ===========================
+BACKGROUND STARS
+=========================== */
+
+const bg = document.getElementById("background-stars");
+
+for(let i=0;i<250;i++){
+
+    let s=document.createElement("span");
+
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    s.style.animationDelay=Math.random()*5+"s";
+
+    bg.appendChild(s);
+
+}
+
+/* ===========================
+STAR DATA
+=========================== */
+
+const stars=[
+
+{
+name:"Rigel",
+x:15,y:14,size:24,color:"#9ed8ff",
+temp:"12,100 K",
+tempDesc:"Rigel is an extremely hot blue supergiant star. Its high temperature causes intense blue-white radiation and strong ultraviolet energy emission.",
+sizeInfo:"Approximately 78.9 times larger than the Sun.",
+sizeDesc:"Rigel is a massive supergiant star with an enormous radius compared to our Sun.",
+colorName:"Blue-White",
+colorDesc:"The blue-white color indicates very high surface temperatures and strong energetic radiation.",
+lum:"About 120,000 times brighter than the Sun.",
+lumDesc:"Rigel is one of the brightest stars visible from Earth due to its enormous energy output.",
+type:"Blue Supergiant",
+typeDesc:"Blue supergiants are massive stars nearing the later stages of stellar evolution.",
+earth:"863 light years",
+sun:"863 light years"
+},
+
+{
+name:"Deneb",
+x:30,y:16,size:22,color:"#e2f2ff",
+temp:"8,525 K",
+tempDesc:"Deneb possesses a very high surface temperature that creates its bright white-blue appearance.",
+sizeInfo:"Approximately 203 solar radii.",
+sizeDesc:"Deneb is an extremely expanded supergiant star.",
+colorName:"Bluish White",
+colorDesc:"Its bluish white appearance indicates a very luminous and energetic atmosphere.",
+lum:"About 196,000 times brighter than the Sun.",
+lumDesc:"Deneb is among the most luminous stars in the Milky Way.",
+type:"White Supergiant",
+typeDesc:"White supergiants are rare evolved stars with enormous luminosities.",
+earth:"2,615 light years",
+sun:"2,615 light years"
+},
+
+{
+name:"Canopus",
+x:24,y:32,size:21,color:"#fff6e6",
+temp:"7,350 K",
+tempDesc:"Canopus has a high surface temperature producing intense white light.",
+sizeInfo:"71 times larger than the Sun.",
+sizeDesc:"Its huge size contributes greatly to its high luminosity.",
+colorName:"White",
+colorDesc:"White stars are extremely hot and emit balanced visible wavelengths.",
+lum:"10,700 times brighter than the Sun.",
+lumDesc:"Canopus radiates massive amounts of stellar energy.",
+type:"Bright Giant",
+typeDesc:"Bright giants are evolved stars larger and brighter than ordinary giants.",
+earth:"310 light years",
+sun:"310 light years"
+},
+
+{
+name:"Achernar",
+x:10,y:40,size:17,color:"#9cd7ff",
+temp:"15,000 K",
+tempDesc:"Achernar is a very hot rapidly rotating star.",
+sizeInfo:"9 solar radii.",
+sizeDesc:"Rapid rotation causes Achernar to become flattened.",
+colorName:"Blue",
+colorDesc:"Blue stars are among the hottest stars in astronomy.",
+lum:"3,000 times brighter than the Sun.",
+lumDesc:"Its luminosity is produced by its intense fusion rate.",
+type:"Main Sequence / Subgiant",
+typeDesc:"Achernar is transitioning from main sequence evolution.",
+earth:"139 light years",
+sun:"139 light years"
+},
+
+{
+name:"Regulus",
+x:18,y:48,size:14,color:"#d8f1ff",
+temp:"12,460 K",
+tempDesc:"Regulus is a hot rapidly spinning star.",
+sizeInfo:"4 solar radii.",
+sizeDesc:"It rotates so fast that its shape is slightly flattened.",
+colorName:"Blue White",
+colorDesc:"Blue-white stars are hotter than white or yellow stars.",
+lum:"288 times brighter than the Sun.",
+lumDesc:"Regulus emits large amounts of radiant energy.",
+type:"Main Sequence",
+typeDesc:"Main sequence stars fuse hydrogen in their cores.",
+earth:"79 light years",
+sun:"79 light years"
+},
+
+{
+name:"Sirius",
+x:28,y:54,size:17,color:"#ffffff",
+temp:"9,940 K",
+tempDesc:"Sirius is hotter than the Sun and emits brilliant white light.",
+sizeInfo:"1.7 solar radii.",
+sizeDesc:"Sirius is larger and hotter than the Sun.",
+colorName:"White",
+colorDesc:"White stars possess high temperatures and intense brightness.",
+lum:"25 times brighter than the Sun.",
+lumDesc:"Sirius is the brightest star visible in Earth's night sky.",
+type:"Main Sequence",
+typeDesc:"Sirius generates energy through hydrogen fusion.",
+earth:"8.6 light years",
+sun:"8.6 light years"
+},
+
+{
+name:"Altair",
+x:40,y:62,size:14,color:"#ffffff",
+temp:"7,700 K",
+tempDesc:"Altair has a hot surface temperature creating white stellar light.",
+sizeInfo:"1.6 solar radii.",
+sizeDesc:"Altair is slightly larger than the Sun.",
+colorName:"White",
+colorDesc:"White stars indicate relatively high temperatures.",
+lum:"11 times brighter than the Sun.",
+lumDesc:"Altair emits significantly more energy than the Sun.",
+type:"Main Sequence",
+typeDesc:"Altair is actively fusing hydrogen in its core.",
+earth:"16.7 light years",
+sun:"16.7 light years"
+},
+
+{
+name:"Sun",
+x:52,y:58,size:18,color:"#ffd94f",
+temp:"5,778 K",
+tempDesc:"The Sun has a moderate temperature compared to other stars.",
+sizeInfo:"1 solar radius.",
+sizeDesc:"The Sun is considered a medium-sized star.",
+colorName:"Yellow",
+colorDesc:"Yellow stars possess balanced visible radiation and moderate heat.",
+lum:"1 times the Sun.",
+lumDesc:"The Sun is the reference standard for stellar luminosity.",
+type:"Main Sequence (G-type)",
+typeDesc:"The Sun is a stable hydrogen-fusing main sequence star.",
+earth:"0 light years",
+sun:"0 light years"
+},
+
+{
+name:"Aldebaran",
+x:72,y:48,size:23,color:"#ff9f45",
+temp:"3,900 K",
+tempDesc:"Aldebaran is cooler than the Sun and appears orange.",
+sizeInfo:"44 solar radii.",
+sizeDesc:"Aldebaran expanded greatly after leaving the main sequence.",
+colorName:"Orange",
+colorDesc:"Orange stars are cooler than yellow or white stars.",
+lum:"439 times brighter than the Sun.",
+lumDesc:"Its large radius contributes to high luminosity.",
+type:"Red Giant",
+typeDesc:"Red giants are evolved stars with expanded outer layers.",
+earth:"65 light years",
+sun:"65 light years"
+},
+
+{
+name:"Betelgeuse",
+x:88,y:22,size:34,color:"#ff562e",
+temp:"3,500 K",
+tempDesc:"Betelgeuse is relatively cool despite its enormous size.",
+sizeInfo:"764 solar radii.",
+sizeDesc:"Betelgeuse is so large it could engulf much of the Solar System.",
+colorName:"Red",
+colorDesc:"Red stars are cooler and emit longer wavelength light.",
+lum:"126,000 times brighter than the Sun.",
+lumDesc:"Its gigantic size creates tremendous luminosity.",
+type:"Red Supergiant",
+typeDesc:"Red supergiants are among the largest stars known.",
+earth:"642 light years",
+sun:"642 light years"
+},
+
+{
+name:"Antares",
+x:90,y:36,size:31,color:"#ff4b2b",
+temp:"3,400 K",
+tempDesc:"Antares has a relatively cool stellar surface.",
+sizeInfo:"680 solar radii.",
+sizeDesc:"Its radius is enormous compared with the Sun.",
+colorName:"Red",
+colorDesc:"Red coloration indicates cooler surface temperatures.",
+lum:"75,900 times brighter than the Sun.",
+lumDesc:"Antares produces huge amounts of stellar radiation.",
+type:"Red Supergiant",
+typeDesc:"Red supergiants are massive evolved stars nearing the end of life.",
+earth:"550 light years",
+sun:"550 light years"
+},
+
+{
+name:"Mira",
+x:93,y:58,size:26,color:"#ff4520",
+temp:"3,000 K",
+tempDesc:"Mira is a cool pulsating red giant star.",
+sizeInfo:"332 solar radii.",
+sizeDesc:"Its atmosphere expands and contracts periodically.",
+colorName:"Red",
+colorDesc:"Red stars are cooler and radiate lower-energy visible light.",
+lum:"8,400 times brighter than the Sun.",
+lumDesc:"Despite low temperature, its huge size makes it luminous.",
+type:"Red Giant Variable",
+typeDesc:"Variable giants change brightness over time.",
+earth:"300 light years",
+sun:"300 light years"
+},
+
+{
+name:"Barnard's Star",
+x:77,y:82,size:8,color:"#ff1e1e",
+temp:"3,134 K",
+tempDesc:"Barnard’s Star is a cool red dwarf star.",
+sizeInfo:"0.2 solar radii.",
+sizeDesc:"It is much smaller than the Sun.",
+colorName:"Red",
+colorDesc:"Red dwarfs are cool and faint stars.",
+lum:"0.0035 times the Sun.",
+lumDesc:"Its luminosity is extremely low compared to the Sun.",
+type:"Red Dwarf",
+typeDesc:"Red dwarfs are the most common stars in the galaxy.",
+earth:"5.96 light years",
+sun:"5.96 light years"
+},
+
+{
+name:"Proxima Centauri",
+x:85,y:88,size:9,color:"#ff2a2a",
+temp:"3,042 K",
+tempDesc:"Proxima Centauri is a cool dim red dwarf.",
+sizeInfo:"0.15 solar radii.",
+sizeDesc:"It is one of the smallest known stars.",
+colorName:"Red",
+colorDesc:"Cool red dwarfs emit reddish visible light.",
+lum:"0.0017 times the Sun.",
+lumDesc:"Its energy output is tiny compared with the Sun.",
+type:"Red Dwarf",
+typeDesc:"Red dwarfs burn fuel extremely slowly.",
+earth:"4.24 light years",
+sun:"4.24 light years"
+},
+
+{
+name:"Sirius B",
+x:20,y:78,size:8,color:"#7fdfff",
+temp:"25,200 K",
+tempDesc:"Sirius B is extremely hot despite being very small.",
+sizeInfo:"0.008 solar radii.",
+sizeDesc:"It is incredibly compact and dense.",
+colorName:"Blue White",
+colorDesc:"Its hot temperature creates intense blue-white radiation.",
+lum:"0.03 times the Sun.",
+lumDesc:"Small size limits total brightness despite extreme heat.",
+type:"White Dwarf",
+typeDesc:"White dwarfs are stellar remnants left after medium stars die.",
+earth:"8.6 light years",
+sun:"8.6 light years"
+},
+
+{
+name:"Procyon B",
+x:36,y:86,size:8,color:"#cceeff",
+temp:"7,740 K",
+tempDesc:"Procyon B is a hot compact white dwarf.",
+sizeInfo:"0.012 solar radii.",
+sizeDesc:"It is extremely dense compared with ordinary stars.",
+colorName:"White",
+colorDesc:"White dwarfs often appear white due to high temperatures.",
+lum:"0.0005 times the Sun.",
+lumDesc:"Small size reduces total energy emission.",
+type:"White Dwarf",
+typeDesc:"White dwarfs are the final stage of Sun-like stars.",
+earth:"11.5 light years",
+sun:"11.5 light years"
+},
+
+{
+name:"RW Cephei",
+x:78,y:10,size:27,color:"#ff8a2a",
+temp:"3,800 K",
+tempDesc:"RW Cephei is a cool hypergiant star.",
+sizeInfo:"1,500 solar radii.",
+sizeDesc:"It is among the largest known stars.",
+colorName:"Orange Red",
+colorDesc:"Its cool atmosphere produces orange-red coloration.",
+lum:"470,000 times brighter than the Sun.",
+lumDesc:"Its huge radius creates enormous luminosity.",
+type:"Hypergiant",
+typeDesc:"Hypergiants are extremely massive rare evolved stars.",
+earth:"3,500 light years",
+sun:"3,500 light years"
+},
+
+{
+name:"δ Cephei",
+x:58,y:30,size:16,color:"#ffe599",
+temp:"6,000 K",
+tempDesc:"δ Cephei has moderate stellar temperatures.",
+sizeInfo:"44 solar radii.",
+sizeDesc:"It expands and contracts rhythmically.",
+colorName:"Yellow White",
+colorDesc:"Its color changes slightly during pulsation cycles.",
+lum:"2,000 times brighter than the Sun.",
+lumDesc:"Cepheid variables are highly luminous stars.",
+type:"Cepheid Variable",
+typeDesc:"Cepheid variables are important distance indicators.",
+earth:"887 light years",
+sun:"887 light years"
+},
+
+{
+name:"β Lyrae",
+x:48,y:40,size:14,color:"#bfe9ff",
+temp:"13,000 K",
+tempDesc:"β Lyrae is a hot interacting binary system.",
+sizeInfo:"15 solar radii.",
+sizeDesc:"Gas transfer occurs between the stars.",
+colorName:"Blue White",
+colorDesc:"Its hot temperature produces blue-white light.",
+lum:"13,500 times brighter than the Sun.",
+lumDesc:"The binary system generates strong stellar radiation.",
+type:"Binary Giant",
+typeDesc:"Binary giants involve close orbiting stellar companions.",
+earth:"960 light years",
+sun:"960 light years"
+},
+
+{
+name:"Polaris",
+x:42,y:24,size:18,color:"#fff0c2",
+temp:"6,015 K",
+tempDesc:"Polaris has a moderate supergiant temperature.",
+sizeInfo:"37.5 solar radii.",
+sizeDesc:"It is much larger than the Sun.",
+colorName:"Yellow White",
+colorDesc:"Yellow-white stars are moderately hot.",
+lum:"2,500 times brighter than the Sun.",
+lumDesc:"Polaris is extremely luminous due to its size.",
+type:"Supergiant",
+typeDesc:"Supergiants are evolved massive stars.",
+earth:"433 light years",
+sun:"433 light years"
+}
+
+];
+
+/* ===========================
+CREATE STARS
+=========================== */
+
+const field=document.getElementById("starField");
+
+stars.forEach(star=>{
+
+    const el=document.createElement("div");
+
+    el.className="star";
+
+    el.style.left=star.x+"%";
+    el.style.top=star.y+"%";
+    el.style.width=star.size+"px";
+    el.style.height=star.size+"px";
+    el.style.background=star.color;
+
+    el.style.boxShadow=
+    `0 0 12px ${star.color},
+     0 0 25px ${star.color},
+     0 0 40px ${star.color}`;
+
+    const label=document.createElement("div");
+    label.className="star-label";
+    label.innerText=star.name;
+
+    el.appendChild(label);
+
+    el.onclick=()=>showInfo(star,el);
+
+    field.appendChild(el);
+
+});
+
+/* ===========================
+SHOW INFO
+=========================== */
+
+function showInfo(star,element){
+
+    document.querySelectorAll(".star")
+    .forEach(s=>s.classList.remove("active"));
+
+    element.classList.add("active");
+
+    document.getElementById("panel")
+    .classList.add("open");
+
+    document.getElementById("starName")
+    .innerText=star.name;
+
+    document.getElementById("infoContent").innerHTML=`
+
+    <div class="info-card">
+        <h3>Star Size</h3>
+        <p><b>${star.sizeInfo}</b></p>
+        <p>${star.sizeDesc}</p>
+    </div>
+
+    <div class="info-card">
+        <h3>Temperature</h3>
+        <p><b>${star.temp}</b></p>
+        <p>${star.tempDesc}</p>
+    </div>
+
+    <div class="info-card">
+        <h3>Star Color</h3>
+        <p><b>${star.colorName}</b></p>
+        <p>${star.colorDesc}</p>
+    </div>
+
+    <div class="info-card">
+        <h3>Luminosity</h3>
+        <p><b>${star.lum}</b></p>
+        <p>${star.lumDesc}</p>
+    </div>
+
+    <div class="info-card">
+        <h3>Stellar Classification</h3>
+        <p><b>${star.type}</b></p>
+        <p>${star.typeDesc}</p>
+    </div>
+
+    <div class="info-card">
+        <h3>Distance</h3>
+        <p><b>Distance from Earth:</b> ${star.earth}</p>
+        <p><b>Distance from the Sun:</b> ${star.sun}</p>
+    </div>
+
+    `;
+
+}
+
+/* ===========================
+CLOSE PANEL
+=========================== */
+
+function closePanel(){
+
+    document.getElementById("panel")
+    .classList.remove("open");
+
+    document.querySelectorAll(".star")
+    .forEach(s=>s.classList.remove("active"));
+
+}
+
+</script>
+
+</body>
+</html>
